@@ -74,6 +74,9 @@ function etag (entity, options) {
 
   // support fs.Stats object
   var isStats = isstats(entity)
+  
+  // 对于是否生成弱 Etag，取决于用户是否自定义为 weak
+  // 否则，系统根据是否是 Stats 对象来决定是否是弱 Etag
   var weak = options && typeof options.weak === 'boolean'
     ? options.weak
     : isStats
@@ -84,6 +87,9 @@ function etag (entity, options) {
   }
 
   // generate entity tag
+  // tag 的生成是根据 entity 是否是 Stats 来决定的
+  // 如果是 Stats，那么直接根据 stats 的最后修改时间和大小来生成 Etag
+  // 如果不是，那么使用 crypto 模块，生成 Hash 值，取前 27 位
   var tag = isStats
     ? stattag(entity)
     : entitytag(entity)
